@@ -23,6 +23,7 @@ const (
 	Num
 )
 
+var failKeepNum int
 var score int
 var TBtn Theme
 
@@ -106,10 +107,12 @@ func numsBtn() *fyne.Container {
 		nums := i + 1
 		btn[i] = widget.NewButton(strconv.Itoa(nums), func() {
 			if nums == randSingleNums {
+				failKeepNum = 0
 				calScore(+10)
 				refreshCard()
 			} else {
-				calScore(-10)
+				failKeepNum++
+				calScore(-failKeepNum * 10)
 			}
 		})
 		wgets[i] = btn[i]
