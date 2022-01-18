@@ -2,7 +2,6 @@ package main
 
 import (
 	_ "embed"
-	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
@@ -24,6 +23,7 @@ const (
 	Num
 )
 
+var score int
 var TBtn Theme
 
 var musicSingle = make(map[int]string)
@@ -64,13 +64,14 @@ func main() {
 }
 
 func singleSyllable() *fyne.Container {
-	singleCardWget = widget.NewCard("", "------------------️", nil)
+	singleCardWget = widget.NewCard("", "", nil)
 	singleCardWget.SetImage(&canvas.Image{
 		Resource: &fyne.StaticResource{
 			StaticName:    "name",
 			StaticContent: fuImg,
 		},
 	})
+	calScore(0)
 	refreshCard()
 	leftBtn := widget.NewButton("Do", func() {
 		if TBtn == Do {
@@ -104,11 +105,11 @@ func numsBtn() *fyne.Container {
 	for i := 0; i < 7; i++ {
 		nums := i + 1
 		btn[i] = widget.NewButton(strconv.Itoa(nums), func() {
-			fmt.Println(nums, randSingleNums)
 			if nums == randSingleNums {
+				calScore(+10)
 				refreshCard()
 			} else {
-				singleCardWget.SetSubTitle("fail! try again")
+				calScore(-10)
 			}
 		})
 		wgets[i] = btn[i]
@@ -121,7 +122,6 @@ func numsBtn() *fyne.Container {
 }
 
 func refreshCard() {
-	singleCardWget.SetSubTitle("-")
 	randSingleNums = getMusicSingle()
 	if TBtn == Do {
 		singleCardWget.SetTitle(musicSingle[randSingleNums])
@@ -129,6 +129,14 @@ func refreshCard() {
 		singleCardWget.SetTitle(strconv.Itoa(randSingleNums))
 	}
 
+}
+
+func calScore(cNums int) {
+	score += cNums
+	if score < 0 {
+		score = 0
+	}
+	singleCardWget.SetSubTitle("Score " + strconv.Itoa(score))
 }
 
 func getMusicSingle() int {
